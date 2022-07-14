@@ -20,6 +20,34 @@ def abrirTelaCadastro():
     cadastroCliente.show()
     loginCliente.close()
 
+def entrar():
+    try:
+        usuario = loginCliente.edtUsuarioCliente.text()
+        senha = loginCliente.edtSenhaCliente.text()
+
+        # verifica se o usuario está cadastrado
+        c.execute("""SELECT EXISTS (SELECT * FROM clientes WHERE usuario = ?);""", [usuario])
+        infoGet = c.fetchone()
+        existe = infoGet[0]
+
+        if existe == 1:
+            c.execute("""SELECT senha FROM clientes WHERE usuario = ?;""", [usuario])
+            infoGet = c.fetchone()
+            senhaCadastrada = infoGet[0]
+
+            if str(senhaCadastrada) == str(senha):
+                print('login realizado com sucesso')
+                # abrir próxima tela
+            else:
+                avisoErro('Usuário e/ou senha incorretos.')
+
+        else:
+            avisoErro('Usuário e/ou senha incorretos.')
+
+    except Exception as e:
+        erro = str(e)
+        avisoErro(erro)
+
 '''Ações tela cadastro cliente'''
 # volta da tela de cadastro para tela de login
 def voltarCadastroLogin():
@@ -86,6 +114,7 @@ telaInicial.btnAreaCliente.clicked.connect(abrirLoginCliente)
 # login cliente
 loginCliente.btnVoltar.clicked.connect(voltarLoginClienteInicio)
 loginCliente.btnCadastre.clicked.connect(abrirTelaCadastro)
+loginCliente.btnEntrar.clicked.connect(entrar)
 
 #cadastro cliente
 cadastroCliente.btnVoltar.clicked.connect(voltarCadastroLogin)
