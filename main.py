@@ -36,8 +36,12 @@ def entrar():
             senhaCadastrada = infoGet[0]
 
             if str(senhaCadastrada) == str(senha):
-                print('login realizado com sucesso')
-                # abrir próxima tela
+                menuCliente.show()
+                loginCliente.close()
+
+                c.execute("""SELECT nome FROM clientes WHERE usuario = ?;""", [usuario])
+                infoGet = c.fetchone()
+                menuCliente.lblLogadoComo.setText('Logado como ' + str(infoGet[0]))
             else:
                 avisoErro('Usuário e/ou senha incorretos.')
 
@@ -74,6 +78,25 @@ def cadastrar():
         erro = str(e)
         avisoErro(erro)
 
+'''Ações tela menu cliente'''
+# volta da tela menu cliente para login
+def voltarMenuLogin():
+    loginCliente.show()
+    menuCliente.close()
+
+def abrirNovoAgendamento():
+    novoAgendamento.show()
+    menuCliente.close()
+
+'''Ações tela novo agendamento'''
+def voltarNovoMenu():
+    menuCliente.show()
+    novoAgendamento.close()
+
+def adicionarServico():
+    servico = novoAgendamento.cbServico.currentText()
+    novoAgendamento.tbServicos.append(servico)
+
 '''Mais'''
 def avisoErro(e):
     aviso = QMessageBox()
@@ -106,6 +129,8 @@ c = con.cursor()
 telaInicial = uic.loadUi("formPrimeiraTela.ui")
 loginCliente = uic.loadUi("formLoginCliente.ui")
 cadastroCliente = uic.loadUi("formCadastroCliente.ui")
+menuCliente = uic.loadUi("formMenuCliente.ui")
+novoAgendamento = uic.loadUi("formNovoAgendamento.ui")
 
 # botoes forms
 # tela inicial
@@ -116,9 +141,17 @@ loginCliente.btnVoltar.clicked.connect(voltarLoginClienteInicio)
 loginCliente.btnCadastre.clicked.connect(abrirTelaCadastro)
 loginCliente.btnEntrar.clicked.connect(entrar)
 
-#cadastro cliente
+# cadastro cliente
 cadastroCliente.btnVoltar.clicked.connect(voltarCadastroLogin)
 cadastroCliente.btnCadastrar.clicked.connect(cadastrar)
+
+# menu cliente
+menuCliente.btnVoltar.clicked.connect(voltarMenuLogin)
+menuCliente.btnNovoAgendamento.clicked.connect(abrirNovoAgendamento)
+
+#novo agendamento
+novoAgendamento.btnVoltar.clicked.connect(voltarNovoMenu)
+novoAgendamento.btnAdicionar.clicked.connect(adicionarServico)
 
 telaInicial.show()
 
