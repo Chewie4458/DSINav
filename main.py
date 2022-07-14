@@ -42,6 +42,8 @@ def entrar():
                 c.execute("""SELECT nome FROM clientes WHERE usuario = ?;""", [usuario])
                 infoGet = c.fetchone()
                 menuCliente.lblLogadoComo.setText('Logado como ' + str(infoGet[0]))
+                novoAgendamento.lblNome.setText(str(infoGet[0]))
+
             else:
                 avisoErro('Usuário e/ou senha incorretos.')
 
@@ -84,6 +86,9 @@ def voltarMenuLogin():
     loginCliente.show()
     menuCliente.close()
 
+    loginCliente.edtUsuarioCliente.setText('')
+    loginCliente.edtSenhaCliente.setText('')
+
 def abrirNovoAgendamento():
     novoAgendamento.show()
     menuCliente.close()
@@ -96,6 +101,29 @@ def voltarNovoMenu():
 def adicionarServico():
     servico = novoAgendamento.cbServico.currentText()
     novoAgendamento.tbServicos.append(servico)
+
+def concluirAgendamento():
+    try:
+        cliente = novoAgendamento.lblNome.text()
+        servicos = novoAgendamento.tbServicos.toPlainText()
+        servicos = tirarN(list(servicos))
+        data = str(novoAgendamento.edtData.date().day()) + '/' + str(novoAgendamento.edtData.date().month()) + '/' \
+               + str(novoAgendamento.edtData.date().year())
+        minuto = novoAgendamento.edtHora.time().minute()
+        if minuto < 10:
+            hora = str(novoAgendamento.edtHora.time().hour()) + ':0' + str(novoAgendamento.edtHora.time().minute())
+        else:
+            hora = str(novoAgendamento.edtHora.time().hour()) + ':' + str(novoAgendamento.edtHora.time().minute())
+
+        c.execute("""INSERT INTO agendamentos (cliente, dia, hora, servicos) VALUES (?, ?, ?, ?);""", (cliente, data, hora, servicos))
+
+        con.commit()
+
+        avisoSucesso('Agendamento realizado com sucesso!\nDia ' + data + ' às ' + hora)
+
+    except Exception as e:
+        erro = str(e)
+        avisoErro(erro)
 
 '''Mais'''
 def avisoErro(e):
@@ -117,6 +145,15 @@ def avisoSucesso(op):
     avisoFoi.setWindowIcon(QtGui.QIcon('imagens/sucesso icon.png'))
 
     avisoFoi.exec()
+
+def tirarN(lista):
+    for c in range(len(lista)):
+        if lista[c] == '\n':
+            lista[c] = ', '
+
+    result = ''.join(lista)
+
+    return result
 
 app = QtWidgets.QApplication([])
 
@@ -152,6 +189,7 @@ menuCliente.btnNovoAgendamento.clicked.connect(abrirNovoAgendamento)
 #novo agendamento
 novoAgendamento.btnVoltar.clicked.connect(voltarNovoMenu)
 novoAgendamento.btnAdicionar.clicked.connect(adicionarServico)
+novoAgendamento.btnConcluir.clicked.connect(concluirAgendamento)
 
 telaInicial.show()
 

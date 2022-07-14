@@ -12,6 +12,13 @@ def criacaoBanco():
                     senha VARCHAR(20) NOT NULL
                     );""")
 
+    c.execute("""CREATE TABLE IF NOT EXISTS agendamentos(
+                    id_agendamento INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    cliente VARCHAR(50) NOT NULL,
+                    dia VARCHAR(10) NOT NULL,
+                    hora VARCHAR(5) NOT NULL,
+                    servicos TEXT NOT NULL);""")
+
     con.commit()
 
     con.close()
