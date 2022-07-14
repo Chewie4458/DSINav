@@ -93,6 +93,10 @@ def abrirNovoAgendamento():
     novoAgendamento.show()
     menuCliente.close()
 
+def abrirAgendamentos():
+    agendamentos.show()
+    menuCliente.close()
+
 '''Ações tela novo agendamento'''
 def voltarNovoMenu():
     menuCliente.show()
@@ -120,6 +124,8 @@ def concluirAgendamento():
         con.commit()
 
         avisoSucesso('Agendamento realizado com sucesso!\nDia ' + data + ' às ' + hora)
+
+        novoAgendamento.tbServicos.clear()
 
     except Exception as e:
         erro = str(e)
@@ -168,6 +174,7 @@ loginCliente = uic.loadUi("formLoginCliente.ui")
 cadastroCliente = uic.loadUi("formCadastroCliente.ui")
 menuCliente = uic.loadUi("formMenuCliente.ui")
 novoAgendamento = uic.loadUi("formNovoAgendamento.ui")
+agendamentos = uic.loadUi("formFuturos.ui")
 
 # botoes forms
 # tela inicial
@@ -185,6 +192,7 @@ cadastroCliente.btnCadastrar.clicked.connect(cadastrar)
 # menu cliente
 menuCliente.btnVoltar.clicked.connect(voltarMenuLogin)
 menuCliente.btnNovoAgendamento.clicked.connect(abrirNovoAgendamento)
+menuCliente.btnFuturos.clicked.connect(abrirAgendamentos)
 
 #novo agendamento
 novoAgendamento.btnVoltar.clicked.connect(voltarNovoMenu)

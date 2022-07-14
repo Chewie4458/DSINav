@@ -89,7 +89,7 @@ color: rgb(247, 248, 242)</string>
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnAreaCliente_2">
+   <widget class="QPushButton" name="btnFuturos">
     <property name="geometry">
      <rect>
       <x>60</x>

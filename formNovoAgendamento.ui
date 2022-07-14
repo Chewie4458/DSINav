@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../AppData/PycharmProjects/DSINav/imagens/login icone.png</normaloff>../../AppData/PycharmProjects/DSINav/imagens/login icone.png</iconset>
+    <normaloff>imagens/agenda icone.png</normaloff>imagens/agenda icone.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color : #F7F8F2;;</string>
