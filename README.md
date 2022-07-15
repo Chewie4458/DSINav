@@ -15,3 +15,5 @@ A versão contém um banco de dados com dados de acesso para teste (arquivo 'dad
 # Usuários teste 
 Os usuários teste para cliente e funcionário tem o campo usuário e senha vazios (Apenas clique em entrar).           
 + usuário Leila -> usuário: leila senha: leila 
+
+* Os prints das telas estão na pasta telas
