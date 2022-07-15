@@ -20,6 +20,13 @@ def criacaoBanco():
                     hora VARCHAR(5) NOT NULL,
                     servicos TEXT NOT NULL);""")
 
+    c.execute("""CREATE TABLE IF NOT EXISTS opAcesso(
+                    id_op INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    nome VARCHAR(50),
+                    usuario VARCHAR(15) NOT NULL,
+                    senha VARCHAR(20) NOT NULL
+                    );""")
+
     con.commit()
 
     con.close()

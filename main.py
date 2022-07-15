@@ -14,6 +14,10 @@ def abrirLoginCliente():
     loginCliente.show()
     telaInicial.close()
 
+def abrirLoginFunc():
+    loginFunc.show()
+    telaInicial.close()
+
 '''Ações tela de login do cliente'''
 # volta da tela de login para tela de inicio
 def voltarLoginClienteInicio():
@@ -24,7 +28,7 @@ def abrirTelaCadastro():
     cadastroCliente.show()
     loginCliente.close()
 
-def entrar():
+def entrarCliente():
     try:
         usuario = loginCliente.edtUsuarioCliente.text()
         senha = loginCliente.edtSenhaCliente.text()
@@ -101,6 +105,7 @@ def abrirNovoAgendamento():
 def abrirAgendamentos():
     agendamentos.show()
     menuCliente.close()
+
     try:
         usuario = agendamentos.lblNome.text()
 
@@ -121,6 +126,23 @@ def abrirAgendamentos():
 def abrirHistorico():
     historico.show()
     menuCliente.close()
+
+    try:
+        cliente = agendamentos.lblNome.text()
+
+        c.execute("""SELECT dia, hora, servicos FROM agendamentos WHERE dataCalculo < current_date AND cliente = ? ORDER BY dataCalculo ASC;""", [cliente])
+
+        infoGet = c.fetchall()
+        historico.tabHist.setRowCount(len(infoGet))
+        historico.tabHist.setColumnCount(3)
+
+        for i in range(len(infoGet)):
+            for j in range(3):
+                historico.tabHist.setItem(i, j, QtWidgets.QTableWidgetItem(str(infoGet[i][j])))
+
+    except Exception as e:
+        erro = str(e)
+        avisoErro(erro)
 
 '''Ações tela novo agendamento'''
 # volta da tela de novo agendamento para o menu
@@ -186,6 +208,60 @@ def voltarHistoricoMenu():
     menuCliente.show()
     historico.close()
 
+# op
+'''Tela login op'''
+def voltarLoginOpInicio():
+    telaInicial.show()
+    loginFunc.close()
+
+def entrarOp():
+    try:
+        usuario = loginFunc.edtUsuarioFunc.text()
+        senha = loginFunc.edtSenhaFunc.text()
+
+        # verifica se o usuario está cadastrado
+        c.execute("""SELECT EXISTS (SELECT * FROM opAcesso WHERE usuario = ?);""", [usuario])
+        infoGet = c.fetchone()
+        existe = infoGet[0]
+
+        if existe == 1:
+            c.execute("""SELECT senha FROM opAcesso WHERE usuario = ?;""", [usuario])
+            infoGet = c.fetchone()
+            senhaCadastrada = infoGet[0]
+
+            if str(senhaCadastrada) == str(senha):
+                agendamentosOp.show()
+                loginFunc.close()
+
+                c.execute("""SELECT cliente, dia, hora, servicos FROM agendamentos WHERE dataCalculo >= current_date
+                ORDER BY dataCalculo ASC, hora ASC;""")
+
+                infoGet = c.fetchall()
+                agendamentosOp.tabAgenda.setRowCount(len(infoGet))
+                agendamentosOp.tabAgenda.setColumnCount(4)
+
+                for i in range(len(infoGet)):
+                    for j in range(4):
+                        agendamentosOp.tabAgenda.setItem(i, j, QtWidgets.QTableWidgetItem(str(infoGet[i][j])))
+
+            else:
+                avisoErro('Usuário e/ou senha incorretos.')
+
+        else:
+            avisoErro('Usuário e/ou senha incorretos.')
+
+    except Exception as e:
+        erro = str(e)
+        avisoErro(erro)
+
+'''Tela agendamentos op'''
+def voltarAgendamentosOpLogin():
+    loginFunc.show()
+    agendamentosOp.close()
+
+    loginFunc.edtUsuarioFunc.setText('')
+    loginFunc.edtSenhaFunc.setText('')
+
 '''Mais'''
 def avisoErro(e):
     aviso = QMessageBox()
@@ -231,15 +307,18 @@ menuCliente = uic.loadUi("formMenuCliente.ui")
 novoAgendamento = uic.loadUi("formNovoAgendamento.ui")
 agendamentos = uic.loadUi("formFuturos.ui")
 historico = uic.loadUi("formHistorico.ui")
+loginFunc = uic.loadUi("formloginFunc.ui")
+agendamentosOp = uic.loadUi("formAgendamentosOp.ui")
 
 # botoes forms
 # tela inicial
 telaInicial.btnAreaCliente.clicked.connect(abrirLoginCliente)
+telaInicial.btnAreaOp.clicked.connect(abrirLoginFunc)
 
 # login cliente
 loginCliente.btnVoltar.clicked.connect(voltarLoginClienteInicio)
 loginCliente.btnCadastre.clicked.connect(abrirTelaCadastro)
-loginCliente.btnEntrar.clicked.connect(entrar)
+loginCliente.btnEntrar.clicked.connect(entrarCliente)
 
 # cadastro cliente
 cadastroCliente.btnVoltar.clicked.connect(voltarCadastroLogin)
@@ -261,6 +340,14 @@ agendamentos.btnVoltar.clicked.connect(voltarAgendamentosMenu)
 
 # historico
 historico.btnVoltar.clicked.connect(voltarHistoricoMenu)
+
+# op
+# login op
+loginFunc.btnVoltar.clicked.connect(voltarLoginOpInicio)
+loginFunc.btnEntrar.clicked.connect(entrarOp)
+
+# agendamentos op
+agendamentosOp.btnVoltar.clicked.connect(voltarAgendamentosOpLogin)
 
 telaInicial.show()
 
