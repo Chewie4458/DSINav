@@ -7,8 +7,6 @@ from banco import criacaoBanco
 
 from datetime import date
 
-dataAtual = date.today()
-
 '''Ações tela inicial'''
 def abrirLoginCliente():
     loginCliente.show()
@@ -187,15 +185,6 @@ def concluirAgendamento():
     except Exception as e:
         erro = str(e)
         avisoErro(erro)
-
-def verificarAgendamentosSemana(dia, mes, ano):
-    cliente = novoAgendamento.lblNome.text()
-    aux = dia - 6
-    dataAux = ano + '-' + mes + '-' + aux
-    data = ano + '-' + mes + '-' + dia
-
-    # anterior ao marcado agora
-    c.execute("""SELECT id_agendamento, dataCalculo FROM agendamentos WHERE cliente = ? AND (data >= dia >= dataAux)""")
 
 '''Ações tela agendamentos'''
 # volta da tela de agendamentos para o menu
