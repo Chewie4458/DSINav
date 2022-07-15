@@ -17,4 +17,4 @@ Os usuários teste para cliente e funcionário tem o campo usuário e senha vazi
 + usuário Leila -> usuário: leila senha: leila 
 
 # *
-Os prints das telas estão na pasta telas
+Os prints das telas estão na pasta 'telas'.
