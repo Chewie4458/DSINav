@@ -114,7 +114,7 @@ color: rgb(247, 248, 242)</string>
      <string>AGENDAMENTOS FUTUROS</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnAreaCliente_3">
+   <widget class="QPushButton" name="btnHistorico">
     <property name="geometry">
      <rect>
       <x>60</x>

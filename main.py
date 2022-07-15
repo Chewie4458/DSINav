@@ -5,6 +5,10 @@ from PyQt5.QtWidgets import QMessageBox
 
 from banco import criacaoBanco
 
+from datetime import date
+
+dataAtual = date.today()
+
 '''Ações tela inicial'''
 def abrirLoginCliente():
     loginCliente.show()
@@ -43,6 +47,7 @@ def entrar():
                 infoGet = c.fetchone()
                 menuCliente.lblLogadoComo.setText('Logado como ' + str(infoGet[0]))
                 novoAgendamento.lblNome.setText(str(infoGet[0]))
+                agendamentos.lblNome.setText(str(infoGet[0]))
 
             else:
                 avisoErro('Usuário e/ou senha incorretos.')
@@ -96,8 +101,29 @@ def abrirNovoAgendamento():
 def abrirAgendamentos():
     agendamentos.show()
     menuCliente.close()
+    try:
+        usuario = agendamentos.lblNome.text()
+
+        c.execute("""SELECT dia, hora, servicos FROM agendamentos WHERE dataCalculo >= current_date AND cliente = ? ORDER BY dataCalculo ASC;""", [usuario])
+
+        infoGet = c.fetchall()
+        agendamentos.tabFuturos.setRowCount(len(infoGet))
+        agendamentos.tabFuturos.setColumnCount(3)
+
+        for i in range(len(infoGet)):
+            for j in range(3):
+                agendamentos.tabFuturos.setItem(i, j, QtWidgets.QTableWidgetItem(str(infoGet[i][j])))
+
+    except Exception as e:
+        erro = str(e)
+        avisoErro(erro)
+
+def abrirHistorico():
+    historico.show()
+    menuCliente.close()
 
 '''Ações tela novo agendamento'''
+# volta da tela de novo agendamento para o menu
 def voltarNovoMenu():
     menuCliente.show()
     novoAgendamento.close()
@@ -111,25 +137,54 @@ def concluirAgendamento():
         cliente = novoAgendamento.lblNome.text()
         servicos = novoAgendamento.tbServicos.toPlainText()
         servicos = tirarN(list(servicos))
-        data = str(novoAgendamento.edtData.date().day()) + '/' + str(novoAgendamento.edtData.date().month()) + '/' \
+
+        mes = str(novoAgendamento.edtData.date().month())
+        if int(mes) < 10:
+            mes = '0' + mes
+
+        dia = str(novoAgendamento.edtData.date().day()) + '/' + mes + '/' \
                + str(novoAgendamento.edtData.date().year())
+        # variavel para calculo de data
+        dataCalculo = str(novoAgendamento.edtData.date().year()) + '-' + mes + '-' \
+              + str(novoAgendamento.edtData.date().day())
+
         minuto = novoAgendamento.edtHora.time().minute()
         if minuto < 10:
             hora = str(novoAgendamento.edtHora.time().hour()) + ':0' + str(novoAgendamento.edtHora.time().minute())
         else:
             hora = str(novoAgendamento.edtHora.time().hour()) + ':' + str(novoAgendamento.edtHora.time().minute())
 
-        c.execute("""INSERT INTO agendamentos (cliente, dia, hora, servicos) VALUES (?, ?, ?, ?);""", (cliente, data, hora, servicos))
+        c.execute("""INSERT INTO agendamentos (cliente, dia, dataCalculo, hora, servicos) VALUES (?, ?, ?, ?, ?);""", (cliente, dia, dataCalculo, hora, servicos))
 
         con.commit()
 
-        avisoSucesso('Agendamento realizado com sucesso!\nDia ' + data + ' às ' + hora)
+        avisoSucesso('Agendamento realizado com sucesso!\nDia ' + dia + ' às ' + hora)
 
         novoAgendamento.tbServicos.clear()
 
     except Exception as e:
         erro = str(e)
         avisoErro(erro)
+
+def verificarAgendamentosSemana(dia, mes, ano):
+    cliente = novoAgendamento.lblNome.text()
+    aux = dia - 6
+    dataAux = ano + '-' + mes + '-' + aux
+    data = ano + '-' + mes + '-' + dia
+
+    # anterior ao marcado agora
+    c.execute("""SELECT id_agendamento, dataCalculo FROM agendamentos WHERE cliente = ? AND (data >= dia >= dataAux)""")
+
+'''Ações tela agendamentos'''
+# volta da tela de agendamentos para o menu
+def voltarAgendamentosMenu():
+    menuCliente.show()
+    agendamentos.close()
+
+'''Ações tela historico'''
+def voltarHistoricoMenu():
+    menuCliente.show()
+    historico.close()
 
 '''Mais'''
 def avisoErro(e):
@@ -175,6 +230,7 @@ cadastroCliente = uic.loadUi("formCadastroCliente.ui")
 menuCliente = uic.loadUi("formMenuCliente.ui")
 novoAgendamento = uic.loadUi("formNovoAgendamento.ui")
 agendamentos = uic.loadUi("formFuturos.ui")
+historico = uic.loadUi("formHistorico.ui")
 
 # botoes forms
 # tela inicial
@@ -193,11 +249,18 @@ cadastroCliente.btnCadastrar.clicked.connect(cadastrar)
 menuCliente.btnVoltar.clicked.connect(voltarMenuLogin)
 menuCliente.btnNovoAgendamento.clicked.connect(abrirNovoAgendamento)
 menuCliente.btnFuturos.clicked.connect(abrirAgendamentos)
+menuCliente.btnHistorico.clicked.connect(abrirHistorico)
 
 #novo agendamento
 novoAgendamento.btnVoltar.clicked.connect(voltarNovoMenu)
 novoAgendamento.btnAdicionar.clicked.connect(adicionarServico)
 novoAgendamento.btnConcluir.clicked.connect(concluirAgendamento)
+
+# agendamentos
+agendamentos.btnVoltar.clicked.connect(voltarAgendamentosMenu)
+
+# historico
+historico.btnVoltar.clicked.connect(voltarHistoricoMenu)
 
 telaInicial.show()
 

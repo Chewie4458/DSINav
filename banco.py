@@ -16,6 +16,7 @@ def criacaoBanco():
                     id_agendamento INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     cliente VARCHAR(50) NOT NULL,
                     dia VARCHAR(10) NOT NULL,
+                    dataCalculo DATE NOT NULL,
                     hora VARCHAR(5) NOT NULL,
                     servicos TEXT NOT NULL);""")
 
